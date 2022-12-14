@@ -24,18 +24,67 @@ const TypingBox = ({words}) => {
 
 
         //logic for space press -> increase my currWordIndex by 1
+        if(e.keyCode === 32){
 
+            //condition to remove cursor. 2 cases middle of the string and @ last char in the string
+            if(allChildSpans.length <= currCharIndex){
+                //cursor present at the end of the string(right cursor)
+                allChildSpans[currCharIndex-1].classList.remove('right-cursor');    //-1 to avoid overflow of characters
+            }
+            else{
+                //cursor present at the middle of the string
+                allChildSpans[currCharIndex].className = allChildSpans[currCharIndex].className.replace('current', '');
+            }
+            wordSpanRef[currWordIndex+1].current.childNodes[0].className = 'char current';
+            setCurrWordIndex(currWordIndex+1);
+            setCurrCharIndex (0);
 
-
-        //logic for backspace
-        if (e.key === 'Backspace') {
-            console.log("user pressed the correct key", e.key);
-            allChildSpans[currCharIndex].className = 'char deleted';
-            setCurrCharIndex(currCharIndex-1);
             return;
         }
 
-        else if(e.key===allChildSpans[currCharIndex].innerText){
+
+        //logic for backspace
+        if (e.keyCode === 8) {
+            
+            if(currCharIndex!==0){
+
+                if(currCharIndex===allChildSpans.length){
+
+                    // to remove extra typed characters
+                    if(allChildSpans[currCharIndex-1].className.includes('extra')){
+                        allChildSpans[currCharIndex-1].remove();
+                        allChildSpans[currCharIndex-2].className+= ' right-cursor';
+                    }
+                    else{
+                        allChildSpans[currCharIndex-1].className = 'char current';
+                    }
+                    allChildSpans[currCharIndex-1].className = 'char current';
+                    setCurrCharIndex(currCharIndex-1);
+                    return;
+                    // if backspace is pressed at last character
+                }
+                allChildSpans[currCharIndex].className = 'char';
+                allChildSpans[currCharIndex-1].className = 'char current';
+                setCurrCharIndex(currCharIndex-1);
+               
+            }
+            
+            return;
+        }
+
+        // Implementing additional char if pressed instead of space
+        if(currCharIndex === allChildSpans.length){
+            // add new characters
+            let newSpan = document.createElement('span');
+            newSpan.innerText = e.key;
+            newSpan.className = 'char incorrect extra right-cursor';
+            allChildSpans[currCharIndex-1].classList.remove('right-cursor');
+            wordSpanRef[currWordIndex].current.append(newSpan)
+            setCurrCharIndex(currCharIndex+1)
+            return;
+        }
+
+        if(e.key===allChildSpans[currCharIndex].innerText){
             console.log("user pressed the correct key", e.key);
             allChildSpans[currCharIndex].className = 'char correct';
         }
@@ -43,6 +92,13 @@ const TypingBox = ({words}) => {
             console.log("user didn't press the correct key", e.key);
             allChildSpans[currCharIndex].className = 'char incorrect';
         }
+        if(currCharIndex+1 === allChildSpans.length){   //case for last character
+            allChildSpans[currCharIndex].className += ' char right-cursor'; //+= overwrite existing class name
+        }
+        else{
+            allChildSpans[currCharIndex+1].className = 'char current';
+        }
+        
         setCurrCharIndex(currCharIndex+1);
 
     }
@@ -54,6 +110,10 @@ const TypingBox = ({words}) => {
 
     useEffect(()=>{
         focusInput();
+        wordSpanRef[0].current.childNodes[0].className = 'char current';   //childNodes gives all the characters
+        // Sets the 0th index with the current class name ⬆️
+        
+
     },[]);
 
 
@@ -63,9 +123,9 @@ const TypingBox = ({words}) => {
         <div className="type-box" onClick={focusInput}>
             <div className="words">
                 {words.map((word,index)=>(
-                    <span className='word' ref={wordSpanRef[index]}>  
-                        {word.split('').map((char)=>(
-                            <span className='char'>{char}</span>
+                    <span className='word' ref={wordSpanRef[index]} key={index}>  
+                        {word.split('').map((char,ind)=>(
+                            <span className='char' key={ind}>{char}</span>
                         ))}
                     </span>
                 ))}

@@ -52,9 +52,6 @@ body{
     opacity:0;
 }
 
-.deleted{
-    color: orange;
-}
 
 .correct{
     color: green;
@@ -63,6 +60,36 @@ body{
 .incorrect{
     color: red;
 }
+
+.current{
+    border-left: 1px solid;
+
+    animation: blinkingLeft 2s infinite;
+    animation-timing-function: ease;
+    @keyframes blinkingLeft{
+        0% {border-left-color:white}
+        25% {border-left-color:black}
+        50% {border-left-color:white}
+        75% {border-left-color:black}
+        100% {border-left-color:white}
+    }
+}
+
+
+.right-cursor{
+    border-right: 1px solid;
+
+    animation: blinkingRight 2s infinite;
+    animation-timing-function: ease;
+    @keyframes blinkingRight{
+        0% {border-Right-color:white}
+        25% {border-Right-color:black}
+        50% {border-Right-color:white}
+        75% {border-Right-color:black}
+        100% {border-Right-color:white}
+    }
+}
+
 
 
 `;
