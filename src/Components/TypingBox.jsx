@@ -33,6 +33,9 @@ const TypingBox = ({words}) => {
             }
             else{
                 //cursor present at the middle of the string
+                for(let i=currCharIndex; i<allChildSpans.length; i++){
+                    allChildSpans[i].className += ' skipped';
+                }
                 allChildSpans[currCharIndex].className = allChildSpans[currCharIndex].className.replace('current', '');
             }
             wordSpanRef[currWordIndex+1].current.childNodes[0].className = 'char current';
